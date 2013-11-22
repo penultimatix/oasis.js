@@ -2136,10 +2136,6 @@ define("oasis/base_adapter",
       loadScripts: mustImplement('BaseAdapter', 'loadScripts'),
       name: mustImplement('BaseAdapter', 'name'),
 
-      oasisURL: function(sandbox) {
-        return sandbox.options.oasisURL || sandbox.oasis.configuration.oasisURL || 'oasis.js.html';
-      },
-
       unsupportedCapabilities: function () {
         return this._unsupportedCapabilities;
       },
@@ -2195,8 +2191,6 @@ define("oasis/base_adapter",
         oasis.configuration.eventCallback(function () {
           Logger.log("Sandbox received initialization message.");
 
-          oasis.configuration.oasisURL = event.data.oasisURL;
-
           adapter.loadScripts(event.data.base, event.data.scriptURLs, oasis);
 
           oasis.connectCapabilities(event.data.capabilities, event.ports);
@@ -2213,7 +2207,6 @@ define("oasis/base_adapter",
           capabilities: sandbox._capabilitiesToConnect,
           base: getBase(),
           scriptURLs: scriptURLs,
-          oasisURL: this.oasisURL(sandbox)
         };
       },
 
@@ -2242,7 +2235,6 @@ define("oasis/config",
     /**
       Stores Oasis configuration.  Options include:
 
-      - `oasisURL` - the default URL to use for sandboxes.
       - `eventCallback` - a function that wraps `message` event handlers.  By
         default the event hanlder is simply invoked.
       - `allowSameOrigin` - a card can be hosted on the same domain
@@ -2531,7 +2523,6 @@ define("oasis/iframe_adapter",
       initializeSandbox: function(sandbox) {
         var options = sandbox.options,
             iframe = document.createElement('iframe'),
-            oasisURL = this.oasisURL(sandbox),
             sandboxAttributes = ['allow-scripts'];
 
         if( sandbox.oasis.configuration.allowSameOrigin ) {
@@ -2565,11 +2556,9 @@ define("oasis/iframe_adapter",
         };
         addEventListener(window, 'message', iframe.errorHandler);
 
+        //TODO: is this still needed?
+        console.log("TODO: check this");
         switch (sandbox.type) {
-          case 'js':
-            verifySandbox( sandbox.oasis, oasisURL );
-            this._setupIFrameBootstrap(iframe, sandbox, oasisURL);
-            break;
           case 'html':
             verifySandbox( sandbox.oasis, sandbox.options.url );
             iframe.src = sandbox.options.url;
@@ -2709,21 +2698,6 @@ define("oasis/iframe_adapter",
         return sandbox.el.name;
       },
 
-      //-------------------------------------------------------------------------
-      // private
-
-      _setupIFrameBootstrap: function (iframe, sandbox, oasisURL) {
-        iframe.src = 'about:blank';
-        iframe.loadHandler = function () {
-          removeEventListener(iframe, 'load', iframe.loadHandler);
-
-          sandbox.oasis.configuration.eventCallback(function () {
-            Logger.log("iframe loading oasis");
-            iframe.contentWindow.location.href = oasisURL;
-          });
-        };
-        addEventListener(iframe, 'load', iframe.loadHandler);
-      }
     });
 
 
@@ -3922,8 +3896,7 @@ define("oasis/webworker_adapter",
       initializeSandbox: function(sandbox) {
         assert(sandbox.type !== 'html', "Webworker adapter only supports type `js` sandboxes, but type `html` was requested.");
 
-        var oasisURL = this.oasisURL(sandbox);
-        var worker = new Worker(oasisURL);
+        var worker = new Worker(sandbox.options.url);
         worker.name = sandbox.options.url + '?uuid=' + UUID.generate();
         sandbox.worker = worker;
 
