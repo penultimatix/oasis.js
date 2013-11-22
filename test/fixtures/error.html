@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/oasis.js" ></script>
+</head>
+<body>
+  <script type="text/javascript">
+    Oasis = requireModule('oasis');
+    oasis = new Oasis();
+    oasis.autoInitializeSandbox();
+  </script>
+  <script type="text/javascript">
+    /* global Window */
+    var message = {sandboxException: "An error occured"};
+
+    if( typeof Window !== "undefined" ) {
+      Window.postMessage( window.parent, message, "*");
+    } else {
+      Worker.postMessage( this, message, [] );
+    }
+  </script>
+</body>
+</html>

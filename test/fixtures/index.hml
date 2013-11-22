@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/oasis.js" ></script>
+</head>
+<body>
+  <script type="text/javascript">
+    Oasis = requireModule('oasis');
+    oasis = new Oasis();
+    oasis.autoInitializeSandbox();
+  </script>
+</body>
+</html>

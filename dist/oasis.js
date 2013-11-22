@@ -2517,6 +2517,8 @@ define("oasis/iframe_adapter",
     }
 
     var IframeAdapter = extend(BaseAdapter, {
+      type: 'html',
+
       //-------------------------------------------------------------------------
       // Environment API
 
@@ -3193,7 +3195,7 @@ define("oasis/sandbox",
       this.dependencies = options.dependencies || pkg.dependencies;
 
       this.adapter = options.adapter || Oasis.adapters.iframe;
-      this.type = options.type || 'js';
+      this.type = options.type || this.adapter.type;
 
       this._capabilitiesToConnect = this._filterCapabilities(capabilities);
       this.envPortDefereds = {};
@@ -3890,6 +3892,8 @@ define("oasis/webworker_adapter",
 
 
     var WebworkerAdapter = extend(BaseAdapter, {
+      type: 'js',
+
       //-------------------------------------------------------------------------
       // Environment API
 

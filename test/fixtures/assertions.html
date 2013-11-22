@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/oasis.js" ></script>
+</head>
+<body>
+  <script type="text/javascript">
+    Oasis = requireModule('oasis');
+    oasis = new Oasis();
+    oasis.autoInitializeSandbox();
+  </script>
+
+  <script type="text/javascript">
+    oasis.connect('assertions', function(port) {
+      port.send('ok', "success");
+    });
+  </script>
+</body>
+</html>
+

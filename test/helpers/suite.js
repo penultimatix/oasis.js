@@ -13,13 +13,10 @@ function createSandbox(options) {
   return sandbox;
 }
 
-function createIframeSandbox(options, skipOasisURL) {
+function createIframeSandbox(options) {
   if (options.adapter === undefined) { options.adapter = Oasis.adapters.iframe; }
-  if (!options.oasisURL && !skipOasisURL) {
-    options.oasisURL = destinationUrl + '/oasis.js.html';
-  }
 
-  return createSandbox(options, skipOasisURL);
+  return createSandbox(options);
 }
 
 function createWebworkerSandbox(options) {

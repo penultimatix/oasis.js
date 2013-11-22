@@ -2,7 +2,12 @@
 <html>
 <head>
   <title>HTML Sandbox</title>
-  <script src="/oasis.js.html"></script>
+  <script src="/oasis.js"></script>
+  <script type="text/javascript">
+    Oasis = requireModule('oasis');
+    oasis = new Oasis();
+    oasis.autoInitializeSandbox();
+  </script>
   <script>
   oasis.connect({
     consumers: {

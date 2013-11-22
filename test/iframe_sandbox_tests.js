@@ -10,9 +10,6 @@ var sandbox, sandboxes,
 
 function createSandbox(options) {
   options.adapter = Oasis.adapters.iframe;
-  if( !options.oasisURL ) {
-    options.oasisURL = destinationUrl + '/oasis.js.html';
-  }
   sandbox = oasis.createSandbox(options);
   sandboxes.push(sandbox);
   return sandbox;
@@ -36,24 +33,24 @@ module('iframe Sandboxes', {
 test("The iframes are uniquely named ( solve a problem with back button and improve debugging)", function() {
   expect(2);
   oasis.register({
-    url: "fixtures/index.js",
+    url: "fixtures/index.html",
     capabilities: []
   });
 
   var sandbox1, sandbox2;
 
   sandbox1 = createSandbox({
-    url: 'fixtures/index.js'
+    url: 'fixtures/index.html'
   });
   sandbox1.start();
 
   sandbox2 = createSandbox({
-    url: 'fixtures/index.js'
+    url: 'fixtures/index.html'
   });
   sandbox2.start();
 
   ok( sandbox1.el.name !== sandbox2.el.name, 'The iframes have a unique name');
-  ok( /fixtures\/index.js/.test( sandbox1.el.name ), 'The iframe name contains the url' );
+  ok( /fixtures\/index.html/.test( sandbox1.el.name ), 'The iframe name contains the url' );
 });
 
 test("The sandbox returns the name of the iframe", function() {
@@ -73,9 +70,10 @@ test("The sandbox returns the name of the iframe", function() {
 
 test("Oasis' bootloader can be hosted on a separate domain", function() {
   expect(2);
+  var cardUrl = destinationUrl +  "/fixtures/assertions.html";
 
   oasis.register({
-    url: "fixtures/assertions.js",
+    url: cardUrl,
     capabilities: ['assertions']
   });
 
@@ -93,11 +91,10 @@ test("Oasis' bootloader can be hosted on a separate domain", function() {
   });
 
   var sandbox = createSandbox({
-    url: "fixtures/assertions.js",
+    url: cardUrl,
     services: {
       assertions: AssertionsService
-    },
-    oasisURL: destinationUrl + '/oasis-custom-url.js.html'
+    }
   });
 
   sandbox.start();
@@ -106,12 +103,12 @@ test("Oasis' bootloader can be hosted on a separate domain", function() {
 test("returns a sandbox with an iframe element", function() {
   expect(1);
   oasis.register({
-    url: "fixtures/index.js",
+    url: "fixtures/index.html",
     capabilities: []
   });
 
   var sandbox = createSandbox({
-    url: "fixtures/index.js"
+    url: "fixtures/index.html"
   });
 
   ok(sandbox.el instanceof window.HTMLIFrameElement, "A new iframe was returned");
@@ -132,13 +129,12 @@ test("A sandbox can communicate back to its originating site", function() {
   });
 
   var sandbox = createSandbox({
-    url: destinationUrl + "/fixtures/same_origin_parent.js",
+    url: destinationUrl + "/fixtures/same_origin_parent.html",
     dependencies: ['fixtures/shims.js'],
     capabilities: ['assertions'],
     services: {
       assertions: AssertionService
-    },
-    oasisURL: destinationUrl + "/oasis.js.html"
+    }
   });
 
   sandbox.start();
@@ -148,7 +144,7 @@ test("Sandboxes can post messages to their own nested (non-Oasis) iframes", func
   expect(1);
   stop();
 
-  var sandboxUrl = destinationUrl +  "/fixtures/same_origin.js";
+  var sandboxUrl = destinationUrl +  "/fixtures/same_origin_sandbox.html";
 
   oasis.register({
     url: sandboxUrl,
@@ -169,8 +165,7 @@ test("Sandboxes can post messages to their own nested (non-Oasis) iframes", func
     dependencies: ['fixtures/shims.js'],
     services: {
       assertions: AssertionService
-    },
-    oasisURL: destinationUrl + '/oasis-custom-url.js.html'
+    }
   });
 
   sandbox.start();
@@ -216,7 +211,7 @@ test("Sandboxes ignore secondary initialization messages", function() {
   });
 
   var sandbox = createSandbox({
-    url: 'fixtures/assertions.js',
+    url: 'fixtures/assertions.html',
     capabilities: ['assertions'],
     services: {
       assertions: AssertionsService
@@ -256,66 +251,12 @@ test("HTML Sandboxes can be loaded directly", function() {
   sandbox.start();
 });
 
-test("HTML Sandboxes do not verify the Oasis URL", function() {
-  expect(1);
-  stop();
-
-  var sandbox = createSandbox({
-    oasisURL: '/oasis.js.html',
-    url: destinationUrl + '/fixtures/simple_html_sandbox.html',
-    type: 'html',
-    capabilities: ['assertions'],
-    services: {
-      assertions: Oasis.Service.extend({
-        events: {
-          ok: function () {
-            ok(true, "HTML sandbox loaded");
-            start();
-          }
-        }
-      })
-    }
-  });
-
-  sandbox.start();
-});
-
-test("JS Sandboxes can not load resources from a different origin than the bootstrap", function() {
-  expect(1);
-  stop();
-
-  var otherOrigin = location.protocol + "//" + location.hostname + ":" + (parseInt(location.port, 10) + 3);
-
-  var sandbox = createSandbox({
-    url: '/fixtures/assertions.js',
-    dependencies: [otherOrigin + '/fixtures/shims.js'],
-    capabilities: ['assertions'],
-    services: {
-      assertions: Oasis.Service.extend({
-        events: {
-          ok: function () {
-            ok(false, "JS sandbox should not load");
-            start();
-          }
-        }
-      })
-    }
-  });
-
-  sandbox.onerror = function( error ) {
-    ok( error.match("You can not load a resource"), "Loading an iframe sandbox with dependencies on an external origin fails");
-    start();
-  };
-
-  sandbox.start();
-});
-
 test("`sandbox.onerror` is called when the sandbox sends an error message", function() {
   expect(1);
   stop();
 
   var sandbox = createSandbox({
-    url: "fixtures/error.js",
+    url: "fixtures/error.html",
     capabilities: []
   }, true);
 
