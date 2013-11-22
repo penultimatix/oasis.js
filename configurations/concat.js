@@ -15,7 +15,7 @@ module.exports = {
 
   test: {
     src: vendorSources.concat([
-      'tmp/oasis.amd.js',
+      'dist/oasis.amd.js',
       'tmp/test/**/*.js'
     ]),
     dest: 'tmp/public/test.js'

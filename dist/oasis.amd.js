@@ -209,7 +209,7 @@ define("oasis/base_adapter",
           isOasisInitialization: true,
           capabilities: sandbox._capabilitiesToConnect,
           base: getBase(),
-          scriptURLs: scriptURLs,
+          scriptURLs: scriptURLs
         };
       },
 
@@ -567,7 +567,7 @@ define("oasis/iframe_adapter",
             iframe.src = sandbox.options.url;
             break;
           default:
-            assert(false, "IFrame Adapter only supports sandbox types `js` and `html`, not `" + sandbox.type + "`");
+            assert(false, "IFrame Adapter only supports sandbox type `html`, not `" + sandbox.type + "`");
         }
 
         Logger.log('Initializing sandbox ' + iframe.name);
@@ -699,7 +699,7 @@ define("oasis/iframe_adapter",
 
       name: function(sandbox) {
         return sandbox.el.name;
-      },
+      }
 
     });
 
